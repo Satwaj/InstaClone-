@@ -31,3 +31,11 @@ login
     username password
 
 logout
+
+
+=> post create 
+
+
+--- captions 
+    imageUrl
+    user
