@@ -11,28 +11,7 @@ const imagekit = new ImageKit ({
 
   async function createPostController (req,res) {
 
-  console.log(req.body,req.file)
-
-  const token = req.cookies.token
-
-  if(!token){
-    return res.status(401).json({message:"Token not provided , Unauthorized Access"})
-  }
-
-  let decoded 
-  try{
-    decoded = jwt.verify(token, process.env.JWT_SECRET)
-  }
-  catch(err){
-    return res.status(401).json({message:"Invalid Token , Unauthorized Access"})
-  }
-
-
-
-  console.log(decoded)
-
-
-
+  
   const file = await imagekit.upload({
     file: req.file.buffer,  // just pass buffer directly
     fileName: "Test",
@@ -43,7 +22,7 @@ const imagekit = new ImageKit ({
   const post = await postModel.create({
     caption:req.body.caption,
     imageUrl:file.url,
-    user:decoded.id
+    user:req.user.id
   })
 
   res.status(201).json({
@@ -60,28 +39,7 @@ const imagekit = new ImageKit ({
 
 async function getPostController (req,res){
 
-  const token = req.cookies.token
-
-  if(!token){
-    return res.status(401).json
-    ({
-      message:"Unauthorized Access"
-    })
-  }
-
-
-let decoded
-
-try
-{
-  decoded = jwt.verify(token , process.env.JWT_SECRET)
-}
-catch(err)
-{
-  return res.status(401).json({message:"Invalid Token"})
-}
-
-const userId = decoded.id
+const userId = req.user.id
 
 const posts = await postModel.find({
   user:userId
@@ -100,31 +58,7 @@ res.status(200).json({
 
 async function getPostDetailsController (req,res){
 
-   console.log(req.body,req.file)
-
-  const token = req.cookies.token
-
-  if(!token){
-    return res.status(401).json
-    ({
-      message:"Token not provided , Unauthorized Access"
-    })
-  }
-
-  let decoded 
-
-  try{
-    decoded = jwt.verify(token, process.env.JWT_SECRET)
-  }
-
-  catch(err){
-    return res.status(401).json
-    ({
-      message:"Invalid Token , Unauthorized Access"
-    })
-  }
-
-  const userId = decoded.id
+  const userId = req.user.id
 
   const postId = req.params.postId
 
